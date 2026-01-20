@@ -35,14 +35,22 @@ A typical package contains:
 
 ```
 /
-├── analysis_manifest.txt        # Fully resolved run configuration (source of truth)
 ├── reports/
-│   └── report.html              # Human-readable evidence report
-├── outputs/
-│   ├── hades_<drug_concept_id>/ # HADES outputs (scan summaries, estimation attempts)
-│   ├── candidate_summaries.csv  # Screened outcomes with signal grading
-│   ├── estimability_status.csv  # Method-level feasibility and failure reasons
-│   └── logs/                    # Structured run logs
+│   └── AUTO_OHDSI_<drug_concept_id>_<timestamp>.html  # Human-readable evidence report
+└── outputs/
+    └── hades_<drug_concept_id>/ # Machine-readable artifacts + diagnostics
+        ├── analysis_manifest.txt
+        ├── report_metrics.json
+        ├── outcomes.csv
+        ├── selected_outcomes.csv
+        ├── signal_scan_summary_<7|14|30|90|365>.csv
+        ├── evidence_summary_top30.csv
+        ├── cohort_method_summary_top30.csv
+        ├── sccs_summary_top30.csv
+        ├── outcome_grading_audit.csv
+        ├── dqd/ (optional)
+        ├── calibration/ (optional)
+        └── diagnostics_top30/ (optional)
 ```
 
 No patient-level data are included.
@@ -57,7 +65,7 @@ All outputs are **aggregate summaries**, subject to minimum cell-count suppressi
 The five target drugs are identified using **OMOP standard drug concept IDs** and include commonly used injectable medications (analgesics, corticosteroids, antibiotics, electrolyte preparations).
 Exact mappings and exposure counts are documented in each package’s manifest.
 
-**Drug concept IDs in this batch (5):** `605012689`, `605014709`, `605012836`, `605008023`, `605012207`
+**Drug concept IDs in this batch (5):** `605012110`, `605012165`, `605013522`, `605014613`, `605014618`
 
 ### Design profiles
 
@@ -101,10 +109,10 @@ Several important characteristics should be noted when reviewing the packages:
    Increased-risk signals are primarily observed in 7- and 14-day windows and are often laboratory-based. These findings are **hypothesis-generating** and require confirmatory designs.
 
 3. **Strict regulatory profiles may be infeasible at single sites**
-   Some runs may be **hard-gated** (e.g., insufficient cohort size / sparse outcomes / suppression rules), which can yield minimal or partial artifacts. These are treated as expected outputs, not failures.
+   In some deployments, runs may be **hard-gated** (e.g., insufficient cohort size / sparse outcomes / suppression rules), which can yield minimal or partial artifacts. These are treated as expected outputs, not failures. *(In this batch, all runs passed the hard gate.)*
 
 4. **Comparator choice matters**
-   When available, runs use an **active comparator**; otherwise an **unexposed** comparator is used. Comparator selection is recorded in each run’s `analysis_manifest.txt` and should be governed explicitly in production networks.
+   This batch uses an **active comparator** for all runs. Comparator selection is recorded in each run’s `analysis_manifest.txt` and should be governed explicitly in production networks.
 
 ---
 
